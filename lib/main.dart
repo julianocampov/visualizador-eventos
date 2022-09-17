@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:visualizador_eventos/pages/detail_page.dart';
 import 'package:visualizador_eventos/pages/login_page.dart';
 import 'package:visualizador_eventos/pages/register_page.dart';
 import 'package:visualizador_eventos/pages/visualizer_page.dart';
@@ -26,9 +27,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "login",
       routes: {
-        "visualizer"  : (context) =>  VisualizerPage(),
+        "visualizer"  : (context) =>  const VisualizerPage(),
         "login"       : (context) =>  const LoginPage(),
         "register"    : (context) =>  const RegisterPage(),
+        "detail"    : (context) =>  const DetailPage(),
       },
     );
   }

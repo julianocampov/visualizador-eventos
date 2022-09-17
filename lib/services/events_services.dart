@@ -57,4 +57,22 @@ class EventsServices {
     return decodeData;
     
   }
+
+  Future eventMedia(String userId) async {
+    var headers = {
+      'Authorization': 'Bearer ${prefs.refreshToken}'
+    };
+    var request = http.Request('GET', Uri.parse('$ip/reto/events/files/obtener/$userId'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    }
+    else {
+      print(response.reasonPhrase);
+    }
+  }
 }

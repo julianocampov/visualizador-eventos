@@ -123,9 +123,9 @@ class LoginWidget extends StatelessWidget {
 
     final ingresoServices = IngresoServices();
     String textError = "";
-    //await ingresoServices.verifyUser(userController.text) == 1
+    
     if (userController.text != "" && passController.text != "") {
-      if(true) {
+      if(await ingresoServices.verifyUser(userController.text) == 1) {
         Map<String, dynamic> res  = await ingresoServices.login(userController.text, passController.text);
 
         if ( res["error"] == null) {
@@ -137,18 +137,20 @@ class LoginWidget extends StatelessWidget {
           );
         } else {
           if(res["error_description"] == "Bad credentials") {
-            textError = "Contraseña incorrecta";
+            textError = "Credenciales incorrectas";
           }
         }
       } else if (await ingresoServices.verifyUser(passController.text) == 2){
-        textError = "El usuario no existe";
+        textError = "Credenciales incorrectas";
       } else {
         textError = "Problemas con el servidor";
       }
     } else {
       textError = "Algún campo está vacío";
     }
-    Fluttertoast.showToast(
+
+    if (textError != "") {
+      Fluttertoast.showToast(
         msg: textError,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
@@ -157,5 +159,6 @@ class LoginWidget extends StatelessWidget {
         textColor: Colors.white,
         fontSize: 16.0
       );
+    }
   } 
 }

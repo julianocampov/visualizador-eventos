@@ -58,7 +58,7 @@ class EventsServices {
     
   }
 
-  Future eventMedia(String userId) async {
+  Future<Map<String, dynamic>> eventMedia(String userId) async {
     var headers = {
       'Authorization': 'Bearer ${prefs.refreshToken}'
     };
@@ -68,11 +68,16 @@ class EventsServices {
 
     http.StreamedResponse response = await request.send();
 
+    final Map<String, dynamic> decodeData = jsonDecode(await response.stream.bytesToString());
+
     if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
+      print(decodeData);
+      return decodeData;
     }
     else {
       print(response.reasonPhrase);
     }
+
+    return {'error' : 'No fue posible recuperar los archivos'};
   }
 }

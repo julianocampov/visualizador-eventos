@@ -37,6 +37,8 @@ dependencies:
   geolocator: ^9.0.1
   location: ^4.4.0
   audioplayers: ^0.20.1
+  flutter_native_splash: ^2.2.9
+  flutter_launcher_icons: ^0.10.0
   
 
 
@@ -47,7 +49,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo2.png
+
+flutter_icons: 
+  android: true 
+  ios: true 
+  image_path: "assets/logo2.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

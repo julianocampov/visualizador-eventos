@@ -103,59 +103,73 @@ class RegisterWidget extends StatelessWidget {
     String textError = "";
     late http.StreamedResponse resp;
 
-    if (_validatePassword(passController.text, repPassController.text)) {
+    if (_validateFields(userController.text, emailController.text, passController.text, repPassController.text)){
 
-      if(await ingresoServices.verifyUser(userController.text) == 1) {
-         textError = "El usuario ya existe";
-      } else if (await ingresoServices.verifyUser(userController.text) == 3){
+      
+      if (_validatePassword(passController.text, repPassController.text)) {
+
+        if(await ingresoServices.verifyUser(userController.text) == 1) {
+          textError = "El usuario ya existe";
+        } else if (await ingresoServices.verifyUser(userController.text) == 3){
+          Fluttertoast.showToast(
+          msg: "Problemas con el servidor",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+          );
+        } else {
+          resp = await ingresoServices.register(
+          userController.text, 
+          emailController.text,
+          passController.text); 
+
+          try {
+            decodeData = json.decode(await resp.stream.bytesToString());
+            textError = decodeData["errors"][0]["defaultMessage"];
+          } catch (e) {
+            print(e);
+          }
+
+          if (resp.statusCode == 201) {
+            Navigator.pushNamed(
+              context, 
+              "otp",
+              arguments: [
+                emailController.text,
+                userController.text
+              ]
+            );
+            textError = "Valida tu correo";
+          } else if (resp.statusCode == 409) {
+            textError = decodeData["message"];
+          }
+        }
         Fluttertoast.showToast(
-        msg: "Problemas con el servidor",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black87,
-        textColor: Colors.white,
-        fontSize: 16.0
+          msg: textError,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
         );
       } else {
-        resp = await ingresoServices.register(
-        userController.text, 
-        emailController.text,
-        passController.text); 
-
-        try {
-          decodeData = json.decode(await resp.stream.bytesToString());
-          textError = decodeData["errors"][0]["defaultMessage"];
-        } catch (e) {
-          print(e);
-        }
-
-        if (resp.statusCode == 201) {
-          Navigator.pushNamed(
-            context, 
-            "otp",
-            arguments: [
-              emailController.text,
-              userController.text
-            ]
-          );
-          textError = "Valida tu correo";
-        } else if (resp.statusCode == 409) {
-          textError = decodeData["message"];
-        }
+        Fluttertoast.showToast(
+          msg: "Las constraseñas no coinciden",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
       }
-      Fluttertoast.showToast(
-        msg: textError,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black87,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
     } else {
-      Fluttertoast.showToast(
-        msg: "Las constraseñas no coinciden",
+    Fluttertoast.showToast(
+        msg: "Algún campo está vacío",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -164,5 +178,12 @@ class RegisterWidget extends StatelessWidget {
         fontSize: 16.0
       );
     }
+  }
+  
+  bool _validateFields(String user, String email, String pass, String repPass) {
+    if (user.isEmpty || email.isEmpty || pass.isEmpty || repPass.isEmpty) {
+      return false;
+    }
+    return true;
   }
 }

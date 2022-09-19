@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -40,6 +41,12 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
       inicializar = false;
       markers = {};
       contId = 0;
+
+      BitmapDescriptor markerbitmap = await BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(),
+          "assets/marker.png",
+      );
+
       switch (_tabController.index) {
         case 0:
             allEvents = await eventsServices.allEvents();
@@ -53,7 +60,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -71,7 +78,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -90,7 +97,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -109,7 +116,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -128,7 +135,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -147,7 +154,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                   onTap: () {
                     Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
                   },
-                  icon: BitmapDescriptor.defaultMarker,
+                  icon: markerbitmap,
                   position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
                 ));
               }
@@ -185,9 +192,6 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
         children: [
           Expanded(
             child: GoogleMap(
-              onCameraMove: (position) {
-                print("AAAAA: $position");
-              },
               onMapCreated: _onMapCreated,
               initialCameraPosition : CameraPosition(
                 target:  LatLng(double.parse(data['lat']), double.parse(data['lon'])),

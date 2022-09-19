@@ -202,7 +202,7 @@ class IngresoServices {
     return 3;
   }
 
-  Future editProfile(String user, String name, String lastName, String token) async { 
+  Future<bool> editProfile(String user, String name, String lastName, String token) async { 
  
     var headers = {
       'Authorization': 'Bearer $token',
@@ -231,6 +231,7 @@ class IngresoServices {
           textColor: Colors.white,
           fontSize: 16.0
         );
+        return true;
     }
     else {
       print(response.reasonPhrase);
@@ -244,5 +245,94 @@ class IngresoServices {
           fontSize: 16.0
         );
     }
+    return false;
+  }
+
+  Future<bool> codChangePass() async {
+    var headers = {
+      'Authorization': 'Bearer ${prefs.refreshToken}',
+      'Cookie': 'color=rojo'
+    };
+    var request = http.MultipartRequest('PUT', Uri.parse('$ip/reto/usuarios/usuarios/codigo/${prefs.username}'));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+      return true;
+    }
+    else {
+      Fluttertoast.showToast(
+          msg: "No fue posible enviar el código, intenta de nuevo",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
+      print(response.reasonPhrase);
+      return false;
+    }
+  }
+
+  Future<bool> changePass(String pass, String code) async {
+    var headers = {
+      'Authorization': 'Bearer ${prefs.refreshToken}',
+      'Cookie': 'color=rojo'
+    };
+    var request = http.MultipartRequest('PUT', Uri.parse('$ip/reto/usuarios/usuarios/editar-contrasena/${prefs.username}'));
+    request.fields.addAll({
+      'new-password': pass,
+      'code'        : code
+    });
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+          msg: "Contraseña cambiada correctamente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
+      return true;
+    }
+    else {
+      print(response.reasonPhrase);
+      final Map<String, dynamic> decodeData = json.decode(await response.stream.bytesToString());
+      print(decodeData);
+
+      if(decodeData["message"] == "Los codigos no coinciden") {
+        Fluttertoast.showToast(
+          msg: "El código no coincide con el enviado, revisa tu correo",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: decodeData["message"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black87,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
+      }
+
+      return false;
+    }    
   }
 }

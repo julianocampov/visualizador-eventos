@@ -53,9 +53,9 @@ class _VisualizerPageState extends State<VisualizerPage> {
                 
                 onSelected:(value){
                   if(value == 0){
-                    //Navigator.pushNamed(context, "perfil");
+                    Navigator.pushNamed(context, "perfil");
                   }else if(value == 1){
-                    //Navigator.pushNamed(context, "config");
+                    Navigator.pushNamed(context, "config");
                   }else if(value == 2){
                     prefs.token = "";
                     prefs.refreshToken = "";

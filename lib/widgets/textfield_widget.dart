@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../user_preferences/user_preferences.dart';
+
 class TextFieldWidget extends StatelessWidget {
   const TextFieldWidget({super.key, required this.label, this.obscure = false, required this.controllerText, this.isEmail = false, this.isPhone = false, this.isEditName = false, this.isEditUserName = false, this.isEditLastName = false});
 
@@ -15,18 +17,18 @@ class TextFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    // final prefs = PreferenciasUsuario();
-    // if(isEditUserName){
-    //   controllerText.text = prefs.username;
-    // }
+    final prefs = PreferenciasUsuario();
+    if(isEditUserName){
+      controllerText.text = prefs.username;
+    }
 
-    // if(isEditName){
-    //   controllerText.text = prefs.name;
-    // }
+    if(isEditName){
+      controllerText.text = prefs.name;
+    }
 
-    // if(isEditLastName){
-    //   controllerText.text = prefs.lastName;
-    // }
+    if(isEditLastName){
+      controllerText.text = prefs.lastName;
+    }
 
     return Padding(  
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),

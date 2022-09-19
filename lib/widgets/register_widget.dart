@@ -130,8 +130,6 @@ class RegisterWidget extends StatelessWidget {
           print(e);
         }
 
-        print("AAAAAAAAAA: ${resp.statusCode}");
-
         if (resp.statusCode == 201) {
           Navigator.pushNamed(
             context, 

@@ -20,8 +20,10 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
 
   late TabController _tabController;
   late List<dynamic> allEvents;
+  String zona = "Selecciona una zona";
   late int contId = 0;
   bool inicializar = true;
+  bool tab = false;
 
   late GoogleMapController mapController;
     void _onMapCreated(GoogleMapController controller) {
@@ -31,14 +33,14 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 7);
-    _tabController.addListener(_handleTabSelection);
+    _tabController = TabController(vsync: this, length: 6);
     _handleTabSelection();
   }
 
   Future<void> _handleTabSelection() async {
-    if (_tabController.indexIsChanging || inicializar) {
+    if (_tabController.indexIsChanging || inicializar || tab) {
       inicializar = false;
+      tab = false;
       markers = {};
       contId = 0;
 
@@ -67,44 +69,50 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
             });
           break;
         case 1:
-          allEvents = await eventsServices.zoneEvents("0");
-            setState(() {
-              for (var element in allEvents) {
-                contId++;
-                markers.add(Marker(
-                  markerId: MarkerId(contId.toString()),
-                  onDrag: null,
-                  onDragStart: null,
-                  onTap: () {
-                    Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
-                  },
-                  icon: markerbitmap,
-                  position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
-                ));
-              }
-            });
+          final AlertDialog dialog = AlertDialog(
+            title: Text('Lista de zonas'),
+            contentPadding: EdgeInsets.zero,
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i <= 25; i++)
+                    ListTile(
+                      title: Text(
+                        'Zona $i',
+                      ),
+                      onTap: () async {
+                          allEvents = await eventsServices.zoneEvents(i.toString());
+                          setState(() {
+                            tab = true;
+                            zona = "Zona $i";
+                            for (var element in allEvents) {
+                              contId++;
+                              markers.add(Marker(
+                                markerId: MarkerId(contId.toString()),
+                                onDrag: null,
+                                onDragStart: null,
+                                onTap: () {
+                                  Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
+                                },
+                                icon: markerbitmap,
+                                position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
+                              ));
+                            }
+                          });
+                          Navigator.pop(context);
+                      },
+                    ),
+                ],
+              ),
+            ),
+          );
+
+          showDialog<void>(context: context, builder: (context) => dialog);
+
           break;
 
           case 2:
-          allEvents = await eventsServices.zoneEvents("2");
-            setState(() {
-              for (var element in allEvents) {
-                contId++;
-                markers.add(Marker(
-                  markerId: MarkerId(contId.toString()),
-                  onDrag: null,
-                  onDragStart: null,
-                  onTap: () {
-                    Navigator.pushNamed(context, "detail", arguments: {'alerta' : element});
-                  },
-                  icon: markerbitmap,
-                  position: LatLng(double.parse(element["location"][0].toString()), double.parse(element["location"][1].toString())),
-                ));
-              }
-            });
-          break;
-
-          case 3:
           allEvents = await eventsServices.statusEvents("1");
             setState(() {
               for (var element in allEvents) {
@@ -123,7 +131,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
             });
           break;
 
-          case 4:
+          case 3:
           allEvents = await eventsServices.statusEvents("2");
             setState(() {
               for (var element in allEvents) {
@@ -142,7 +150,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
             });
           break;
 
-          case 5:
+          case 4:
           allEvents = await eventsServices.statusEvents("3");
             setState(() {
               for (var element in allEvents) {
@@ -203,7 +211,7 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
               
             ),
           ),
-          
+
           SizedBox(
             height: 42,  
             child: AppBar(
@@ -214,6 +222,9 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                 ),
                 controller: _tabController,
                 isScrollable: true,
+                onTap: (value) {
+                  _handleTabSelection();
+                },
                 tabs: [
                   Tab(
                     height: 30,
@@ -225,12 +236,6 @@ class _MapaWidgetState extends State<MapaWidget> with SingleTickerProviderStateM
                     height: 40,
                     child: Image.asset(
                       'assets/zona_1.png',
-                    ),
-                  ),
-                  Tab(
-                    height: 40,
-                    child: Image.asset(
-                      'assets/zona_2.png',
                     ),
                   ),
                   Tab(

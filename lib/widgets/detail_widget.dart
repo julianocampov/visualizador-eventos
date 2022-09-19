@@ -182,8 +182,8 @@ class DetailWidget extends StatelessWidget {
                       return Column(
                         children: [
                           SizedBox(
-                            width: MediaQuery.of(context).size.width*0.9,
-                            height: MediaQuery.of(context).size.height*0.6,
+                            width: MediaQuery.of(context).size.width*0.6,
+                            height: MediaQuery.of(context).size.height*0.5,
                             child: _showPhotos(fotos, context)
                           ),
 
@@ -255,14 +255,10 @@ class DetailWidget extends StatelessWidget {
       Uint8List image = const Base64Decoder().convert(foto);
 
       return SizedBox(
-        height: 240,
-        width: 240,
         child: FittedBox(
           fit: BoxFit.cover,
           child: Image.memory(
             image,
-            width: 200,
-            height: 240,
           ),
         ),
       );

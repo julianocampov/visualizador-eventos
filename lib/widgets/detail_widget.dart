@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:visualizador_eventos/services/events_services.dart';
+import 'audio_widget.dart';
 
 class DetailWidget extends StatelessWidget {
   const DetailWidget({super.key});
@@ -15,9 +15,24 @@ class DetailWidget extends StatelessWidget {
     final alerta = args['alerta'];
     final eventsServices = EventsServices();
 
-    String user_id =  alerta['id'];
+    String userId =  alerta['id'];
+    String status;
 
-    return Container(
+    switch (alerta['status']) {
+      case 1:
+        status = "Activo";
+        break;
+
+      case 2:
+        status = "Inactivo";
+        break;
+
+      default:
+        status = "Descartado";
+        break;
+    }
+
+    return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: double.infinity,
       child: SingleChildScrollView(
@@ -43,28 +58,25 @@ class DetailWidget extends StatelessWidget {
       
             Text("latitud: ${alerta['location'][0].toString()} , longitud: ${alerta['location'][1].toString()}"),
       
-            Text(alerta['zoneCode'].toString()),
+            Text("Zona: ${alerta['zoneCode']}"),
+
+            Text(status),
       
             Text("UserID: ${alerta['id']}"),
       
             FutureBuilder(
-              future: eventsServices.eventMedia(user_id),
+              future: eventsServices.eventMedia(userId),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
                 if (snapshot.hasData) {
-                  bool isPlaying = false;
-                  final audioPlayer = AudioPlayer();
 
-                  Duration duration = Duration.zero;
-                  Duration position = Duration.zero;
                   final data = snapshot.data!;
                   final fotos = data['photos'];
                   final audios = data['audios'];
-                  final videos = data['videos'];
                   return SafeArea(
                     child: Column(
                       children: [
                         _showPhotos(fotos),
-                        
+                        AudioWidget(audios: audios)
                       ],
                     ),
                   );
@@ -82,22 +94,19 @@ class DetailWidget extends StatelessWidget {
                   );
                 }
               }
-      
-      
             )
-            
           ]
         ),
       ),
     );
   }
-  
+
   Widget _showPhotos(List<dynamic> fotos) {
     for (var foto in fotos) {
       //convert Base64 string to Uint8List
       Uint8List image = const Base64Decoder().convert(foto);
 
-      return Container(
+      return SizedBox(
         height: 240,
         width: 240,
         child: FittedBox(
@@ -110,7 +119,6 @@ class DetailWidget extends StatelessWidget {
         ),
       );
     }
-
-    return Text("No hay fotos");
+    return const Text("No hay fotos disponibles");
   }
 }

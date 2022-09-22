@@ -18,6 +18,7 @@ class DetailWidget extends StatelessWidget {
     final eventsServices = EventsServices();
 
     String userId =  alerta['id'];
+    print(alerta.toString());
     String status;
 
     switch (alerta['status']) {
@@ -65,7 +66,7 @@ class DetailWidget extends StatelessWidget {
                   ),
               
                   Text( 
-                      " ${"${alerta['eventDescription']}".substring(0, 1).toUpperCase()}${"${alerta['eventDescription']}".substring(1).toLowerCase()}",
+                      !alerta['eventDescription'].isEmpty ? " ${"${alerta['eventDescription']}".substring(0, 1).toUpperCase()}${"${alerta['eventDescription']}".substring(1).toLowerCase()}" : "Evento sin descripción",
                       style: const TextStyle(
                         fontSize: 23,
                         fontWeight: FontWeight.bold
